@@ -85,7 +85,7 @@ def launch_GA(population, generations):
     creator.create("Individual", list, fitness=creator.FitnessMax)
     toolbox = base.Toolbox()
 
-    # Attribute generator
+    #Attribute generator
     attributes=[]
     for idx, val in enumerate(options):
         toolbox.register("attr_"+str(idx), random.randint, 0, len(val)-1)
@@ -97,7 +97,7 @@ def launch_GA(population, generations):
     toolbox.register("mate", tools.cxTwoPoint)
     toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
     toolbox.register("select", tools.selTournament, tournsize=3)
-    #Multiprocdessing
+    #Multiprocessing
     pool = multiprocessing.Pool(3)
     toolbox.register("map", pool.map)
 
