@@ -3,13 +3,14 @@ Stockfish compilation optimisation tool
 
 It's a genetic algorithm that selects compiler flags ; here are the results versus the standard build :
 
-Engine                          | Nodes/second
-stockfish_gene                  | 2296180.0 +- 17787.26
-stockfish_base                  | 2240525.0 +- 8060.88
+|Engine                          | Nodes/second |
+| --- | --- |
+|stockfish_gene                  | 2296180.0 +- 17787.26 |
+|stockfish_base                  | 2240525.0 +- 8060.88 |
 
-Differences                     | 48329.0 +- 11991.0
-Variance of the mean            | 3461.5 ( 7.16 %)
-Speed up                        | 2.16 %
+Differences                     : 48329.0 +- 11991.0
+Variance of the mean            : 3461.5 ( 7.16 %)
+Speed up                        : 2.16 %
 
 For the curious, here is the log of the 10 hour long genetic algorithm searching :
 
