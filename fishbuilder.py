@@ -74,8 +74,11 @@ def individualToParameters(individual):
 #Evaluation function, keep the best sample of the bench
 def evalOneMax(individual):
     executable=build(individualToParameters(individual))
-    fitness=max(benchEngine(executable,3))
-    os.remove(executable)
+    if os.path.isfile(executable):
+        fitness=max(benchEngine(executable,3))
+        os.remove(executable)
+    else:
+	fitness=0
     return [fitness]
 
 #Launch the genetic algorithm loop
