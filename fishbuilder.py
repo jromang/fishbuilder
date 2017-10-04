@@ -42,7 +42,7 @@ with open("gcc_options.txt", "r") as f:
 # Build a Stockfish executable with revelant options
 def build(build_options, filename=None):
     if filename is None: filename=tempfile.mktemp()
-    default_options='-m64 -O3 -DNDEBUG -DIS_64BIT -msse -msse3 -mpopcnt -DUSE_POPCNT -DUSE_PEXT -mbmi2'.split(' ')
+    default_options='-march=native -m64 -O3 -DNDEBUG -DIS_64BIT -msse -msse3 -mpopcnt -DUSE_POPCNT -DUSE_PEXT -mbmi2'.split(' ')
     subprocess.call(['g++'] + files + default_options + build_options + ['-lpthread', '-o', filename])
     return filename
 
