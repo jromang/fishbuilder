@@ -47,6 +47,18 @@ def build(build_options, filename=None):
     return filename
 
 
+def profile_build(build_options, filename=None):
+    if filename is None: filename = tempfile.mktemp()
+    #print("Profile building 1/2")
+    build(build_options+['-fprofile-generate', '-lgcov'], filename)
+    #print("Bench")
+    subprocess.call([filename, 'bench'], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
+    #print("Profile building 2/2")
+    build(build_options + ['-fprofile-use', '-lgcov'], filename)
+    #print("Done")
+    return filename
+
+
 # Bench the engine with multiple samples
 def bench_engine(name, samples):
     command = [name, 'bench']
@@ -86,7 +98,7 @@ def eval_one_max(individual):
 
 
 # Launch the genetic algorithm loop
-def launch_ga(population, generations):
+def launch_ga(population, generations, executable_dir):
     print("Starting with a population of "+str(population)+" and "+str(generations)+" generations.")
     creator.create("FitnessMax", base.Fitness, weights=(1.0,))
     creator.create("Individual", list, fitness=creator.FitnessMax)
@@ -118,16 +130,17 @@ def launch_ga(population, generations):
     # Launch the evolution algorithm
     pop, log = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=generations, 
                                    stats=stats, halloffame=hof, verbose=True)
-    # Display the best individual
-    print('\n'+str(hof)+'\n')
-    print(' '.join(individual_to_parameters(hof[0])))
-    print('\n')
-    # Final build with the best parameters
-    build(individual_to_parameters(hof[0]), 'stockfish')
+    # Display the best individual and save it to disk
+    result = '\n'+str(hof)+'\n'+' '.join(individual_to_parameters(hof[0]))+'\n'
+    print(result)
+    with open(os.path.join(executable_dir, "best_fit.txt"), mode='a') as file:
+        file.write(result)
+    # Final PGO build with the best parameters
+    profile_build(individual_to_parameters(hof[0]), os.path.join(executable_dir, 'stockfish'))
 
 
 if __name__ == "__main__":
-    version = '1.01'
+    version = '1.02'
     print("Fishbuilder "+version+" by jromang")
     print("WARNING : Intel turbo boost should be DISABLED in the BIOS")
 
@@ -139,11 +152,15 @@ if __name__ == "__main__":
             data = response.read()  # a `bytes` object
             out_file.write(data)
 
+    #Current path
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+
     # Unzip source
-    src_dir=tempfile.TemporaryDirectory()
+    src_dir = tempfile.TemporaryDirectory()
     zip_ref = zipfile.ZipFile('Stockfish.zip', 'r')
     zip_ref.extractall(src_dir.name)
     zip_ref.close()
     os.chdir(os.path.join(src_dir.name,'Stockfish-master'))
 
-    launch_ga(100, 40)
+    launch_ga(100, 50, dir_path)
+

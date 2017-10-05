@@ -102,3 +102,7 @@ ENV/
 
 # Stockfish source
 Stockfish.zip
+
+#Result files
+stockfish
+best_fit.txt
