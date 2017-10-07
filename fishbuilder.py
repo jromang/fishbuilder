@@ -139,6 +139,27 @@ def launch_ga(population, generations, executable_dir):
     profile_build(individual_to_parameters(hof[0]), os.path.join(executable_dir, 'stockfish'))
 
 
+# Individual flag testing
+def flag_test(executable_dir):
+    # Build base version
+    base_executable=profile_build([])
+    base_value=max(bench_engine(base_executable, 30))
+    print("Base NPS:"+str(base_value))
+
+    with open(os.path.join(executable_dir,'gcc_good.txt')) as f:
+        content = f.readlines()
+        for line in content:
+            flags=line.split(' ')
+            for flag in flags:
+                flag=flag.strip('\n')
+                print("Testing "+flag, end='')
+                executable = profile_build([flag])
+                flag_value=max(bench_engine(executable, 30))
+                percent=flag_value*100/base_value
+                print(' '+str(percent)+"% : "+str(flag_value)+"NPS")
+
+
+
 if __name__ == "__main__":
     version = '1.02'
     print("Fishbuilder "+version+" by jromang")
@@ -163,4 +184,5 @@ if __name__ == "__main__":
     os.chdir(os.path.join(src_dir.name,'Stockfish-master'))
 
     launch_ga(100, 50, dir_path)
+    #flag_test(dir_path)
 
